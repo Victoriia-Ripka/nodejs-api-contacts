@@ -9,7 +9,7 @@ const { nanoid } = require("nanoid");
 const { ctrlWrapper, HttpError, sendEmail } = require("../helpers");
 require("dotenv").config();
 
-const { SECRET_KEY, BASE_URL } = process.env.SECRET_KEY;
+const { SECRET_KEY, BASE_URL } = process.env;
 
 const createVarifyEmail = (email, verificationToken) => {
   return {

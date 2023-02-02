@@ -16,7 +16,7 @@ const transport = nodemailer.createTransport(nodemailerConfig);
 
 
 const sendEmail = async (data) => {
-  const email = { ...data, from: "" };
+  const email = { ...data, from: APP_EMAIL };
   transport
     .sendMail(email)
     .then(() => console.log("Email send successful"))
