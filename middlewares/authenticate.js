@@ -13,9 +13,10 @@ const authenticate = async (req, res, next) => {
   }
 
   try {
-    const { id } = jwt.verify(token, SECRET_KEY);
-    const user = await User.findById(id);
-    if (!user || !user.token || token !== String(user.token)) {
+    const { email } = jwt.verify(token, SECRET_KEY);
+    const user = await User.findOne({ email });
+    
+    if (!user || !user.verificationToken || token !== String(user.verificationToken)) {
       next(HttpError(401));
     }
     req.user = user;

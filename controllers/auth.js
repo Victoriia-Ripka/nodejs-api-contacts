@@ -28,8 +28,12 @@ const register = async (req, res) => {
     throw HttpError(409, "Email in use");
   }
 
-  const verificationToken = nanoid();
-  const verifyEmail = createVarifyEmail(email, verificationToken);
+  const payload = {
+    email
+  };
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "24h" });
+
+  const verifyEmail = createVarifyEmail(email, token);
   await sendEmail(verifyEmail);
 
   const hashPassword = await bcrypt.hash(password, 10);
@@ -38,7 +42,7 @@ const register = async (req, res) => {
   const newUser = await User.create({
     ...req.body,
     password: hashPassword,
-    verificationToken,
+    verificationToken: token,
     avatarURL,
     verify: true,
   });
@@ -116,9 +120,7 @@ const login = async (req, res) => {
   }
 
   const payload = {
-    id: user._id,
-    // name: user.name,
-    // email: user.email,
+    email
   };
 
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "24h" });
@@ -141,12 +143,8 @@ const logout = async (req, res) => {
 };
 
 const current = async (req, res) => {
-  const { email, subscription } = req.user;
-
-  res.status(200).json({
-    email,
-    subscription,
-  });
+  const user = req.user
+  res.status(200).json({...user});
 };
 
 const updateSubscriptionType = async (req, res) => {
