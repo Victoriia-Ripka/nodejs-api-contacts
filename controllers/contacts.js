@@ -12,7 +12,7 @@ const getAllContacts = async (req, res) => {
     skip,
     limit: +limit,
   }).populate("owner", "email subscription");
-  res.json({ data, status: 200 });
+  res.status(200).json({ data });
 };
 
 const getContact = async (req, res) => {
@@ -42,9 +42,8 @@ const updateContact = async (req, res) => {
 
 const updateFavorite = async (req, res) => {
   const { contactId } = req.params;
-  console.log(req.body)
   const result = await Contact.findOneAndUpdate(
-    { _id: contactId }, req.body, { new: true } );
+    { _id: contactId }, { favorite: !req.body.favorite}, { new: true } );
   if (!result) {
     throw HttpError(404);
   }
@@ -54,7 +53,6 @@ const updateFavorite = async (req, res) => {
 const deleteContact = async (req, res) => {
   const { contactId } = req.params;
   const bool = await Contact.findOneAndRemove({ _id: contactId });
-  console.log(bool);
   if (!bool) {
     throw HttpError(404);
   } else {

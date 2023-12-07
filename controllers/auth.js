@@ -47,13 +47,7 @@ const register = async (req, res) => {
     verify: true,
   });
 
-  res.status(201).json({
-    user: {
-      email: newUser.email,
-      subscription: newUser.subscription,
-      verificationToken: newUser.verificationToken
-    },
-  });
+  res.status(201).json({ user: newUser });
 };
 
 // const verify = async (req, res) => {
