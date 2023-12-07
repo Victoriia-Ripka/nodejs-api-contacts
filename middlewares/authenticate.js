@@ -19,7 +19,6 @@ const authenticate = async (req, res, next) => {
       next(HttpError(401));
     }
     req.user = user;
-    //   якщо все добре, то некст передає роботу наступній функції в коді
     next();
   } catch {
     next(HttpError(401));

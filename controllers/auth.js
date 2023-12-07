@@ -20,7 +20,6 @@ const createVarifyEmail = (email, verificationToken) => {
 };
 
 const register = async (req, res) => {
-  console.log(req.body);
   const { email, password } = req.body;
   const user = await User.findOne({ email });
 
@@ -41,66 +40,68 @@ const register = async (req, res) => {
     password: hashPassword,
     verificationToken,
     avatarURL,
+    verify: true,
   });
 
   res.status(201).json({
     user: {
       email: newUser.email,
       subscription: newUser.subscription,
+      verificationToken: newUser.verificationToken
     },
   });
 };
 
-const verify = async (req, res) => {
-  const { verificationToken } = req.params;
+// const verify = async (req, res) => {
+//   const { verificationToken } = req.params;
 
-  if (!verificationToken) {
-    throw HttpError(404);
-  }
+//   if (!verificationToken) {
+//     throw HttpError(404);
+//   }
 
-  const user = await User.findOne({ verificationToken, verify: false });
+//   const user = await User.findOne({ verificationToken, verify: false });
 
-  if (!user) {
-    throw HttpError(404);
-  }
+//   if (!user) {
+//     throw HttpError(404);
+//   }
 
-  await User.findByIdAndUpdate(user._id, {
-    verify: true,
-    verificationToken: "",
-  });
+//   await User.findByIdAndUpdate(user._id, {
+//     verify: true,
+//     verificationToken: "",
+//   });
 
-  res.status(200).json({
-    message: "Verification successful",
-  });
-};
+//   res.status(200).json({
+//     message: "Verification successful",
+//   });
+// };
 
-const verifyNewly = async (req, res) => {
-  const { email } = req.body;
+// const verifyNewly = async (req, res) => {
+//   const { email } = req.body;
 
-  if (!email) {
-    throw HttpError(400, "missing required field email");
-  }
+//   if (!email) {
+//     throw HttpError(400, "missing required field email");
+//   }
 
-  const user = await User.findOne({ email });
+//   const user = await User.findOne({ email });
 
-  if (user.verify) {
-    return res.status(400).json({
-      message: "Verification has already been passed",
-    });
-  }
+//   if (user.verify) {
+//     return res.status(400).json({
+//       message: "Verification has already been passed",
+//     });
+//   }
 
-  const verifyEmail = createVarifyEmail(email, user.verificationToken);
-  await sendEmail(verifyEmail);
+//   const verifyEmail = createVarifyEmail(email, user.verificationToken);
+//   await sendEmail(verifyEmail);
 
-  await User.findByIdAndUpdate(user._id, {
-    verify: true,
-    verificationToken: "",
-  });
+//   await User.findByIdAndUpdate(user._id, {
+//     verify: true,
+//     verificationToken: "",
+//   });
 
-  res.status(200).json({
-    message: "Verification email sent",
-  });
-};
+//   res.status(200).json({
+//     message: "Verification email sent",
+//   });
+// };
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -132,10 +133,14 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  const { _id: owner } = req.user;
+  const { email } = req.body; 
 
-  await User.findByIdAndUpdate({ _id: owner }, { token: "" });
-  res.status(204);
+  const user = await User.findOneAndUpdate({ email }, { token: "" });
+  if (!user) { 
+    HttpError(404)
+  }
+
+  res.status(204).end();
 };
 
 const current = async (req, res) => {
@@ -216,8 +221,8 @@ const passwordRecovery = async (req, res) => {
 
 module.exports = {
   register: ctrlWrapper(register),
-  verify: ctrlWrapper(verify),
-  verifyNewly: ctrlWrapper(verifyNewly),
+  // verify: ctrlWrapper(verify),
+  // verifyNewly: ctrlWrapper(verifyNewly),
   login: ctrlWrapper(login),
   logout: ctrlWrapper(logout),
   current: ctrlWrapper(current),
