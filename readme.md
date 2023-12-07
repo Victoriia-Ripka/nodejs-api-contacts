@@ -1,6 +1,6 @@
 # Backend for ContactApp (Node.js)
 
-`http://localhost:3000/api/users`
+`http://localhost:1647/api/users`
 
 | Method | URL       | Params                                          | Descriptoin              |
 | ------ | --------- | ----------------------------------------------- | ------------------------ |
@@ -11,7 +11,7 @@
 | patch  | /         |                                                 | update subscription type |
 | patch  | / avatars | upload file (Content-Type: multipart/form-data) | update user`s avatar     |
 
-`http://localhost:3000/api/contacts`
+`http://localhost:1647/api/contacts`
 
 | Method | URL         | Params                              | Descriptoin                            |
 | ------ | ----------- | ----------------------------------- | -------------------------------------- |
